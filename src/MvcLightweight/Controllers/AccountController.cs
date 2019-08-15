@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -18,7 +19,11 @@ namespace MvcLightweight.Controllers
             identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
 
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            var properties = new AuthenticationProperties
+            {
+                ExpiresUtc = DateTime.Now.AddMinutes(10)
+            };
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, properties);
 
             return RedirectToAction("Index", "Home");
         }
