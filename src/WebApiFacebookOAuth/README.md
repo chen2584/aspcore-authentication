@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/27294165/how-should-a-facebook-user-access-token-be-consumed-on-the-server-side

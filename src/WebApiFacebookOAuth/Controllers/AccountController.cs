@@ -13,7 +13,13 @@ namespace WebApiFacebookOAuth.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var queryStrings = Request.Query;
+            foreach (var queryString in queryStrings)
+            {
+                Console.WriteLine($"{queryString.Key}: {queryString.Value}");
+            }
+            // Console.WriteLine(JsonConvert.SerializeObject(value));
+            return Ok();
         }
 
         // GET api/values/5
@@ -21,13 +27,6 @@ namespace WebApiFacebookOAuth.Controllers
         public ActionResult<string> Get(int id)
         {
             return "value";
-        }
-
-        // POST api/values
-        [HttpPost]
-        public void Post(object value)
-        {
-            Console.WriteLine(JsonConvert.SerializeObject(value));
         }
 
         // PUT api/values/5

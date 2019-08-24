@@ -19,14 +19,15 @@ namespace WebApiFacebookOAuth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddFacebook(options =>
-            {
-                options.AppId = "";
-                options.AppSecret = "";
+            // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            // .AddFacebook(options =>
+            // {
+            //     options.AppId = "";options.AppId = Configuration["Authentication:Facebook:AppId"];
+            //     options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            //     options.AppSecret = "";
 
-            })
-            .AddCookie();
+            // })
+            // .AddCookie();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
