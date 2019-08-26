@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebApiFacebookOAuth.Entities;
+using WebApiFacebookOAuth.Models;
 
 namespace WebApiFacebookOAuth
 {
@@ -19,6 +22,8 @@ namespace WebApiFacebookOAuth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var setting = Configuration.Get<AppSetting>();
+            services.AddSingleton<AppSetting>(setting);
             // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             // .AddFacebook(options =>
             // {
@@ -28,7 +33,11 @@ namespace WebApiFacebookOAuth
 
             // })
             // .AddCookie();
+            services.AddDbContextPool<MyDbContext>(optionBuilder => optionBuilder.UseNpgsql(setting.ConnectionString));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            var db = services.BuildServiceProvider().GetService<MyDbContext>();
+            db.Database.EnsureCreated();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
