@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using WebApiFacebookOAuth.Models;
 using WebApiFacebookOAuth.Services;
 
 namespace WebApiFacebookOAuth.Controllers
@@ -39,14 +40,25 @@ namespace WebApiFacebookOAuth.Controllers
             return _facebookOAuthService.GetAuthorizationUrl();
         }
 
-        [HttpGet("facebook/signin")]
-        public async Task<ActionResult<string>> SignIn([Required] string code)
+        private SignInOutput CreateSignInOutput(string accessToken, DateTime expires)
         {
-            var accessToken = await _facebookOAuthService.GetAccessTokenAsync(code);
-            var userInfo = await _facebookOAuthService.GetUserInfoAsync(accessToken);
+            var output = new SignInOutput
+            {
+                AccessToken = accessToken,
+                ExpiresDate = expires
+            };
+            return output;
+        }
 
-            await _authenticationService.AddFacebookUserIfNotExistAsync(userInfo);
-            return Ok(userInfo);
+        [HttpGet("facebook/signin")]
+        public async Task<ActionResult<SignInOutput>> SignIn([Required] string code)
+        {
+            var oAuthAccessToken = await _facebookOAuthService.GetAccessTokenAsync(code);
+            var userInfo = await _facebookOAuthService.GetUserInfoAsync(oAuthAccessToken);
+
+            var userProfile = await _authenticationService.GetUserProfileAsync(userInfo);
+            var (accessToken, expires) = _authenticationService.GenerateAuthorizationToken(userProfile);
+            return CreateSignInOutput(accessToken, expires);
         }
     }
 }

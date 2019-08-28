@@ -51,7 +51,7 @@ namespace WebApiFacebookOAuth.Services
             var responseContent = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                var oAuthAccessToken = JsonConvert.DeserializeObject<OAuthAccessToken>(responseContent);
+                var oAuthAccessToken = JsonConvert.DeserializeObject<FacebookOAuthAccessToken>(responseContent);
                 return oAuthAccessToken.AccessToken;
             }
             else
@@ -60,7 +60,7 @@ namespace WebApiFacebookOAuth.Services
             }
         }
 
-        public async Task<OAuthUserInfo> GetUserInfoAsync(string accessToken)
+        public async Task<FacebookOAuthUserInfo> GetUserInfoAsync(string accessToken)
         {
             var uri = $"https://graph.facebook.com/v4.0/me?access_token={accessToken}&fields=id%2Cname%2Cfirst_name%2Clast_name%2Cemail&format=json";
 
@@ -69,7 +69,7 @@ namespace WebApiFacebookOAuth.Services
             var responseContent = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                var userInfo = JsonConvert.DeserializeObject<OAuthUserInfo>(responseContent);
+                var userInfo = JsonConvert.DeserializeObject<FacebookOAuthUserInfo>(responseContent);
                 return userInfo;
             }
             else

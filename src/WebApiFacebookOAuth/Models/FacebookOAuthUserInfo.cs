@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace WebApiFacebookOAuth.Models
 {
-    public class OAuthUserInfo
+    public class FacebookOAuthUserInfo
     {
         [JsonProperty("id")]
         public string Id { get; set; }

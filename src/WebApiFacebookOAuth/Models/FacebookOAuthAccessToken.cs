@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace WebApiFacebookOAuth.Models
 {
-    public class OAuthAccessToken
+    public class FacebookOAuthAccessToken
     {
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }

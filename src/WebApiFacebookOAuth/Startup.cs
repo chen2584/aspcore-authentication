@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using WebApiFacebookOAuth.Entities;
 using WebApiFacebookOAuth.Models;
 using WebApiFacebookOAuth.Services;
@@ -25,15 +28,19 @@ namespace WebApiFacebookOAuth
         {
             var setting = Configuration.Get<AppSetting>();
             services.AddSingleton<AppSetting>(setting);
-            // services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            // .AddFacebook(options =>
-            // {
-            //     options.AppId = "";options.AppId = Configuration["Authentication:Facebook:AppId"];
-            //     options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-            //     options.AppSecret = "";
-
-            // })
-            // .AddCookie();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = setting.JwtAuthentication.Issuer,
+                    ValidAudience = setting.JwtAuthentication.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(setting.JwtAuthentication.SecurityKey)),
+                };
+            });
             services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddScoped<UtilService>();
@@ -60,6 +67,7 @@ namespace WebApiFacebookOAuth
             }
 
             // app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseMvc();
