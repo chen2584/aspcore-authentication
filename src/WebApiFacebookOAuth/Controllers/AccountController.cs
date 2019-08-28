@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using WebApiFacebookOAuth.Services;
 
 namespace WebApiFacebookOAuth.Controllers
 {
@@ -9,6 +12,14 @@ namespace WebApiFacebookOAuth.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        readonly AuthenticationService _authenticationService;
+        readonly FacebookOAuthService _facebookOAuthService;
+        public AccountController(FacebookOAuthService facebookOAuthService, AuthenticationService authenticationService)
+        {
+            _facebookOAuthService = facebookOAuthService;
+            _authenticationService = authenticationService;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -22,23 +33,20 @@ namespace WebApiFacebookOAuth.Controllers
             return Ok();
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [HttpGet("facebook/oauthuri")]
+        public ActionResult<string> GetFacebookAuthorizationUri()
         {
-            return "value";
+            return _facebookOAuthService.GetAuthorizationUrl();
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpGet("facebook/signin")]
+        public async Task<ActionResult<string>> SignIn([Required] string code)
         {
-        }
+            var accessToken = await _facebookOAuthService.GetAccessTokenAsync(code);
+            var userInfo = await _facebookOAuthService.GetUserInfoAsync(accessToken);
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            await _authenticationService.AddFacebookUserIfNotExistAsync(userInfo);
+            return Ok(userInfo);
         }
     }
 }

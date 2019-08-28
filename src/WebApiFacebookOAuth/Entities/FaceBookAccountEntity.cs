@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApiFacebookOAuth.Entities
 {
-    public class FaceAccountEntity
+    public class FacebookAccountEntity
     {
         [Key]
         public int UserProfileId { get; set; }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebApiFacebookOAuth.Entities;
 using WebApiFacebookOAuth.Models;
+using WebApiFacebookOAuth.Services;
 
 namespace WebApiFacebookOAuth
 {
@@ -33,11 +34,16 @@ namespace WebApiFacebookOAuth
 
             // })
             // .AddCookie();
+            services.AddHttpContextAccessor();
+            services.AddHttpClient();
+            services.AddScoped<UtilService>();
+            services.AddScoped<FacebookOAuthService>();
+            services.AddScoped<AuthenticationService>();
             services.AddDbContextPool<MyDbContext>(optionBuilder => optionBuilder.UseNpgsql(setting.ConnectionString));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            var db = services.BuildServiceProvider().GetService<MyDbContext>();
-            db.Database.EnsureCreated();
+            // var db = services.BuildServiceProvider().GetService<MyDbContext>();
+            // db.Database.EnsureCreated();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
