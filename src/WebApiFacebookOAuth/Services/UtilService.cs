@@ -10,6 +10,6 @@ namespace WebApiFacebookOAuth.Services
             _context = httpContextAccessor.HttpContext;
         }
 
-        public string GetBaseUri() => $"{_context.Request.Scheme}://{_context.Request.Host}";
+        public string GetBaseUri() => $"{_context.Request.Scheme}://{_context.Request.Host}/";
     }
 }

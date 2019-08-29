@@ -24,7 +24,8 @@ namespace WebApiFacebookOAuth.Services
         private string GetRedirectUri()
         {
             var baseUri = _utilService.GetBaseUri();
-            var redirectUri = $"{baseUri}/api/Account/facebook/signin";
+            // var redirectUri = $"{baseUri}/api/Account/facebook/signin";
+            var redirectUri = baseUri;
             return redirectUri;
         }
 

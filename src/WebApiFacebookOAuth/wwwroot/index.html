@@ -3,36 +3,73 @@
 <head>
     <title>Hello World Title</title>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
-        window.fbAsyncInit = function () {
-            FB.init({
-                appId: '516113435598587',
-                cookie: true,
-                xfbml: true,
-                version: '1'
+        function signIn(authorizationCode) {
+            if (authorizationCode != null) {
+                var uri = "api/account/facebook/signin?code=" + authorizationCode;
+                $.get(uri, function (data, status) {
+                    getUserProfile(data.accessToken)
+                });
+            }
+        }
+
+        function getUserProfile(jwtToken) {
+            var uri = "api/account/profile";
+            $.ajax({
+                url: uri,
+                type: 'GET',
+                dataType: 'json',
+                headers: {
+                    'Authorization': 'Bearer ' + jwtToken,
+                },
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {
+                    var jsonString = JSON.stringify(result);
+                    $("#profileInfo").text(jsonString);
+                },
+                error: function (error) {
+
+                }
             });
+        }
 
-            FB.AppEvents.logPageView();
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
 
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
         };
 
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) { return; }
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+        function setFacebookOAuthUri() {
+            var url = "api/account/facebook/oauthuri"
+            $.get("api/account/facebook/oauthuri", function (data, status) {
+                $("#facebookOAuthUri").attr("href", data); // Set herf value
+            });
+        }
 
+        $(document).ready(function () {
+            setFacebookOAuthUri();
 
-        FB.getLoginStatus(function(response) {
-            console.log(response);
+            var authorizationCode = getUrlParameter("code");
+            if (authorizationCode != null) {
+                signIn(authorizationCode);
+            }
         });
     </script>
 </head>
 
 <body>
-    Hello World! <a href="https://www.facebook.com/v4.0/dialog/oauth?client_id=516113435598587&redirect_uri=https%3A%2F%2Flocalhost%3A5002%2Fapi%2Faccount&scope=public_profile%2Cemail&state=%7Bst%3Dstate123abc%2Cds%3D123456789%7D">Login via Facebook</a>
+    <a id="facebookOAuthUri" href="">Login via Facebook</a>
+    <div id="profileInfo"></div>
 </body>
 
 </html>

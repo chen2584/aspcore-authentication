@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WebApiFacebookOAuth.Models;
@@ -22,16 +23,16 @@ namespace WebApiFacebookOAuth.Controllers
         }
 
         // GET api/values
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        [Authorize]
+        [HttpGet("profile")]
+        public ActionResult<Dictionary<string, string>> Get()
         {
-            var queryStrings = Request.Query;
-            foreach (var queryString in queryStrings)
+            var userClaims = new Dictionary<string, string>();
+            foreach (var claim in User.Claims)
             {
-                Console.WriteLine($"{queryString.Key}: {queryString.Value}");
+                userClaims[claim.Type] = claim.Value;
             }
-            // Console.WriteLine(JsonConvert.SerializeObject(value));
-            return Ok();
+            return userClaims;
         }
 
         [HttpGet("facebook/oauthuri")]
