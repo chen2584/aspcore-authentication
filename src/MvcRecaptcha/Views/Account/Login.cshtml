@@ -20,7 +20,7 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="col-sm-10">
-                <div class="g-recaptcha" data-sitekey="@_setting.GoogleReCaptcha.SiteKey" data-callback="recaptchaFunction"></div>
+                @Html.Recaptcha(@_setting.GoogleReCaptcha.SiteKey, "recaptchaFunction")
                 This site is protected by reCAPTCHA and the Google
                 <a href="https://policies.google.com/privacy">Privacy Policy</a> and
                 <a href="https://policies.google.com/terms">Terms of Service</a> apply.

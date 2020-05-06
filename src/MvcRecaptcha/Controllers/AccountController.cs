@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MvcRecaptcha.Attributes;
 using MvcRecaptcha.Models;
 using MvcRecaptcha.Models.Controllers.Account;
 using MvcRecaptcha.Services;
@@ -27,18 +28,13 @@ namespace MvcRecaptcha.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginInput input)
+        [ValidateRecaptcha]
+        public IActionResult Login(LoginInput input)
         {
 
             if (!ModelState.IsValid)
             {
                 return View(input);
-            }
-
-            var isCapchaPassed = await _capchaService.IsPassedAsync();
-            if (!isCapchaPassed)
-            {
-                return Ok("Capcha fail");
             }
 
             if (input.Username.Equals("admin") && input.Password.Equals("admin"))
